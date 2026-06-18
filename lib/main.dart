@@ -33,7 +33,7 @@ class BistMaliyetApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeModeProvider);
     return MaterialApp(
-      title: 'BİST Maliyet Hesaplama Asistanı',
+      title: 'BİST Maliyet Hesaplama Asistanı', // v1.0.1
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),
