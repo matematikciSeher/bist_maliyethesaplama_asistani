@@ -2,6 +2,8 @@
 
 BIST Maliyet Hesaplama Asistani - Flutter uygulamasi.
 
+> Son guncelleme: v1.0.2
+
 ## Ozellikler
 
 - Maliyet hesaplama
