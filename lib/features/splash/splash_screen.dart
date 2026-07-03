@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/widgets/app_update_gate.dart';
 import '../calculator/calculator_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -26,7 +27,9 @@ class _SplashScreenState extends State<SplashScreen> {
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
         transitionDuration: const Duration(milliseconds: 450),
-        pageBuilder: (_, __, ___) => const CalculatorScreen(),
+        pageBuilder: (_, __, ___) => const AppUpdateGate(
+              child: CalculatorScreen(),
+            ),
         transitionsBuilder: (_, animation, __, child) =>
             FadeTransition(opacity: animation, child: child),
       ),
