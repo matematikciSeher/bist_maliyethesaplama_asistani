@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/calc/cost_calculator.dart';
 import '../../../core/utils/currency.dart';
 import '../../../core/utils/formatters.dart';
+import '../../../l10n/app_localizations.dart';
 import '../calculator_providers.dart';
 
 /// Kayıtlı hesapların listelendiği, yükleme ve silme yapılabilen alt sayfa.
@@ -12,6 +13,7 @@ class SavedCalculationsSheet extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context);
     final items = ref.watch(savedCalculationsProvider);
     const calculator = CostCalculator();
 
@@ -26,7 +28,7 @@ class SavedCalculationsSheet extends ConsumerWidget {
                 const Icon(Icons.folder_open_outlined),
                 const SizedBox(width: 8),
                 Text(
-                  'Kayıtlı Hesaplar',
+                  l.savedCalculations,
                   style: Theme.of(context)
                       .textTheme
                       .titleLarge
@@ -43,7 +45,7 @@ class SavedCalculationsSheet extends ConsumerWidget {
           const Divider(height: 1),
           Expanded(
             child: items.isEmpty
-                ? const _EmptyState()
+                ? _EmptyState(l: l)
                 : ListView.separated(
                     padding: const EdgeInsets.all(12),
                     itemCount: items.length,
@@ -81,9 +83,12 @@ class SavedCalculationsSheet extends ConsumerWidget {
                                 fontWeight: FontWeight.w600),
                           ),
                           subtitle: Text(
-                            'Ort. ${Formatters.money(result.averageCost, currency.symbol)}'
-                            '  •  ${Formatters.quantity(result.totalQuantity)} lot\n'
-                            '${Formatters.dateTime(calc.updatedAt)}',
+                            l.savedItemSubtitle(
+                              Formatters.money(
+                                  result.averageCost, currency.symbol),
+                              Formatters.quantity(result.totalQuantity),
+                              Formatters.dateTime(calc.updatedAt),
+                            ),
                           ),
                           isThreeLine: true,
                           trailing: IconButton(
@@ -91,7 +96,7 @@ class SavedCalculationsSheet extends ConsumerWidget {
                               Icons.delete_outline,
                               color: Theme.of(context).colorScheme.error,
                             ),
-                            tooltip: 'Sil',
+                            tooltip: l.delete,
                             onPressed: () => _confirmDelete(
                                 context, ref, calc.id, calc.name),
                           ),
@@ -117,19 +122,20 @@ class SavedCalculationsSheet extends ConsumerWidget {
     String id,
     String name,
   ) async {
+    final l = AppLocalizations.of(context);
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Silinsin mi?'),
-        content: Text('"$name" kalıcı olarak silinecek.'),
+        title: Text(l.deleteConfirmTitle),
+        content: Text(l.deleteConfirmMessage(name)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('İptal'),
+            child: Text(l.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Sil'),
+            child: Text(l.delete),
           ),
         ],
       ),
@@ -141,7 +147,9 @@ class SavedCalculationsSheet extends ConsumerWidget {
 }
 
 class _EmptyState extends StatelessWidget {
-  const _EmptyState();
+  final AppLocalizations l;
+
+  const _EmptyState({required this.l});
 
   @override
   Widget build(BuildContext context) {
@@ -156,12 +164,12 @@ class _EmptyState extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Text(
-            'Henüz kayıtlı hesap yok',
+            l.noSavedYet,
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 4),
           Text(
-            'Bir hesap oluşturup "Kaydet" deyin',
+            l.createAndSaveHint,
             style: Theme.of(context).textTheme.bodySmall,
           ),
         ],

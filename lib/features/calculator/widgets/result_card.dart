@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../core/calc/cost_calculator.dart';
 import '../../../core/utils/currency.dart';
 import '../../../core/utils/formatters.dart';
+import '../../../l10n/app_localizations.dart';
 
 /// Ortalama maliyet, toplam lot ve toplam tutarı gösteren özet kartı.
 class ResultCard extends StatelessWidget {
@@ -17,6 +18,7 @@ class ResultCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final scheme = Theme.of(context).colorScheme;
     return Container(
       width: double.infinity,
@@ -39,7 +41,7 @@ class ResultCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Ortalama Maliyetiniz',
+            l.yourAverageCost,
             style: TextStyle(
               color: scheme.onPrimary.withValues(alpha: 0.85),
               fontSize: 14,
@@ -61,7 +63,7 @@ class ResultCard extends StatelessWidget {
             children: [
               Expanded(
                 child: _MiniStat(
-                  label: 'Toplam Lot',
+                  label: l.totalLots,
                   value: Formatters.quantity(result.totalQuantity),
                   color: scheme.onPrimary,
                 ),
@@ -73,7 +75,7 @@ class ResultCard extends StatelessWidget {
               ),
               Expanded(
                 child: _MiniStat(
-                  label: 'Toplam Tutar',
+                  label: l.totalAmount,
                   value: Formatters.money(result.totalAmount, currency.symbol),
                   color: scheme.onPrimary,
                 ),

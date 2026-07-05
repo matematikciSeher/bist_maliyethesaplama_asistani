@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:in_app_update/in_app_update.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../utils/app_version_utils.dart';
 import 'app_update_config.dart';
 import 'ios_app_update_handler.dart';
@@ -104,25 +105,22 @@ class AppUpdateService {
   }
 
   static Future<bool?> showUpdateDialog(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return showDialog<bool>(
       context: context,
       barrierDismissible: false,
       builder: (ctx) => AlertDialog(
         icon: const Icon(Icons.system_update_alt_rounded),
-        title: const Text('Güncelleme Mevcut'),
-        content: const Text(
-          'Yeni bir sürüm yayınlandı. Uygulamanızı yeniden yüklemeden '
-          'güncelleyebilirsiniz. Kayıtlı hesaplamalarınız ve ayarlarınız '
-          'korunur.',
-        ),
+        title: Text(l.updateAvailableTitle),
+        content: Text(l.updateAvailableBody),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Daha Sonra'),
+            child: Text(l.later),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Güncelle'),
+            child: Text(l.update),
           ),
         ],
       ),
@@ -130,6 +128,7 @@ class AppUpdateService {
   }
 
   static Future<bool?> showMandatoryUpdateDialog(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return showDialog<bool>(
       context: context,
       barrierDismissible: false,
@@ -137,15 +136,12 @@ class AppUpdateService {
         canPop: false,
         child: AlertDialog(
           icon: const Icon(Icons.warning_amber_rounded),
-          title: const Text('Zorunlu Güncelleme'),
-          content: const Text(
-            'Bu sürüm artık desteklenmiyor. Uygulamayı kullanmaya devam '
-            'etmek için güncellemeniz gerekiyor. Verileriniz korunur.',
-          ),
+          title: Text(l.mandatoryUpdateTitle),
+          content: Text(l.mandatoryUpdateBody),
           actions: [
             FilledButton(
               onPressed: () => Navigator.pop(ctx, true),
-              child: const Text('Güncelle'),
+              child: Text(l.update),
             ),
           ],
         ),
@@ -154,23 +150,21 @@ class AppUpdateService {
   }
 
   static Future<void> showRestartDialog(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return showDialog<void>(
       context: context,
       barrierDismissible: false,
       builder: (ctx) => AlertDialog(
         icon: const Icon(Icons.download_done_rounded),
-        title: const Text('Güncelleme Hazır'),
-        content: const Text(
-          'Güncelleme indirildi. Kurulumu tamamlamak için uygulamayı '
-          'yeniden başlatın.',
-        ),
+        title: Text(l.updateReadyTitle),
+        content: Text(l.updateReadyBody),
         actions: [
           FilledButton(
             onPressed: () {
               Navigator.pop(ctx);
               InAppUpdate.completeFlexibleUpdate();
             },
-            child: const Text('Yeniden Başlat'),
+            child: Text(l.restart),
           ),
         ],
       ),
@@ -190,10 +184,11 @@ class AppUpdateService {
     if (info.flexibleUpdateAllowed) {
       final result = await InAppUpdate.startFlexibleUpdate();
       if (result == AppUpdateResult.success && context.mounted) {
+        final l = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Güncelleme indiriliyor…'),
-            duration: Duration(seconds: 4),
+          SnackBar(
+            content: Text(l.updateDownloading),
+            duration: const Duration(seconds: 4),
           ),
         );
       }

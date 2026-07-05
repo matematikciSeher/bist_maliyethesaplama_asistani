@@ -1,0 +1,160 @@
+{
+  "@@locale": "en",
+
+  "appTitle": "BIST Cost Calculation Assistant",
+
+  "splashBrand": "BIST",
+  "splashCost": "COST",
+  "splashCalculation": "CALCULATION",
+  "splashAssistant": "ASSISTANT",
+
+  "save": "Save",
+  "cancel": "Cancel",
+  "delete": "Delete",
+  "update": "Update",
+
+  "yourPurchases": "Your Purchases",
+  "recordChip": "Record",
+  "addRow": "Add Row",
+  "newCalcStarted": "New calculation started",
+  "enterAtLeastOnePurchase": "Enter at least one valid purchase first",
+  "savedNamed": "\"{name}\" saved",
+  "@savedNamed": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "saveCalculation": "Save Calculation",
+  "stockAccountName": "Stock / Account name",
+  "stockAccountHint": "e.g. THYAO",
+  "unnamed": "Unnamed",
+  "noRecordsToExport": "No records to export",
+  "saveBackup": "Save backup",
+  "backupExported": "Backup exported",
+  "selectBackupFile": "Select backup file",
+  "recordsImported": "{count} records imported",
+  "@recordsImported": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "fileUnreadable": "File could not be read or is invalid",
+
+  "drawerTitle": "BIST Cost",
+  "drawerSubtitle": "Calculation Assistant",
+  "costReduction": "Cost Reduction",
+  "dividendCalculation": "Dividend Calculation",
+  "profitLossSimulator": "Profit/Loss Simulator",
+  "savedCalculations": "Saved Calculations",
+  "newItem": "New",
+  "exportItem": "Export",
+  "importItem": "Import",
+  "currencyLabel": "Currency",
+  "darkTheme": "Dark Theme",
+  "currencyTooltip": "Currency",
+
+  "currencyTRYLabel": "Turkish Lira",
+  "currencyUSDLabel": "US Dollar",
+  "currencyEURLabel": "Euro",
+
+  "price": "Price",
+  "lot": "Lot",
+  "amount": "Amount",
+  "deleteRow": "Delete row",
+
+  "yourAverageCost": "Your Average Cost",
+  "totalLots": "Total Lots",
+  "totalAmount": "Total Amount",
+
+  "deleteConfirmTitle": "Delete?",
+  "deleteConfirmMessage": "\"{name}\" will be permanently deleted.",
+  "@deleteConfirmMessage": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "noSavedYet": "No saved calculations yet",
+  "createAndSaveHint": "Create a calculation and tap \"Save\"",
+  "savedItemSubtitle": "Avg. {avg}  •  {qty} lot\n{date}",
+  "@savedItemSubtitle": {
+    "placeholders": {
+      "avg": { "type": "String" },
+      "qty": { "type": "String" },
+      "date": { "type": "String" }
+    }
+  },
+
+  "smartCostReduction": "Smart Cost Reduction",
+  "yourPositionInfo": "Your Position Info",
+  "lotsYouHold": "Lots You Hold",
+  "hintThousand": "e.g. 1,000",
+  "averageCost": "Average Cost",
+  "hintDecimal32": "e.g. 32.00",
+  "currentPrice": "Current Price",
+  "hintDecimal24": "e.g. 24.00",
+  "targetCost": "Target Cost",
+  "hintDecimal28": "e.g. 28.00",
+  "result": "Result",
+  "costReductionResult": "To lower your cost from {start} to {newCost}, you should buy {lots} more lots.",
+  "@costReductionResult": {
+    "placeholders": {
+      "start": { "type": "String" },
+      "newCost": { "type": "String" },
+      "lots": { "type": "String" }
+    }
+  },
+  "additionalPurchaseAmount": "Additional Purchase",
+  "newTotalLots": "New Total Lots",
+  "lotSuffix": "lot",
+  "costReductionIncompleteInput": "Fill in all fields to calculate. Enter the lots you hold, your average cost, the current price and the target cost.",
+  "costReductionTargetNotLower": "The target cost must be lower than your current average cost. Set a lower target to reduce your cost.",
+  "costReductionPriceNotBelowTarget": "The current price must be below the target cost. You cannot bring your average down to the target by buying at this price.",
+  "costReductionInfo": "The calculation is based only on purchase cost; commissions, taxes and price fluctuations are not taken into account. This is not investment advice.",
+
+  "dividendInfoSection": "Dividend Info",
+  "numberOfLots": "Number of Lots",
+  "dividendPerShareGross": "Dividend per Share (Gross)",
+  "hintDecimal250": "e.g. 2.50",
+  "withholdingRate": "Withholding Rate",
+  "hint15": "e.g. 15",
+  "sharePriceForYield": "Share Price (for yield)",
+  "netDividend": "Net Dividend",
+  "grossDividend": "Gross Dividend",
+  "withholdingDeduction": "Withholding",
+  "yieldRate": "Yield Rate",
+  "dividendEmptyMessage": "Enter the number of lots and the gross dividend per share to calculate. You can also enter the share price to see the yield.",
+  "dividendInfoNote": "Net dividend is found by deducting withholding tax from the gross amount. In Türkiye the dividend withholding tax is currently 15%. The yield is the ratio of the dividend per share to the share price. This is not investment advice.",
+  "percentValue": "{value}%",
+  "@percentValue": {
+    "placeholders": {
+      "value": { "type": "String" }
+    }
+  },
+
+  "cost": "Cost",
+  "hintDecimal35": "e.g. 35.00",
+  "profitLossEmptyMessage": "Enter the cost and lot info to run the simulation. Then move the slider to change the price and see your profit/loss instantly.",
+  "profit": "Profit",
+  "loss": "Loss",
+  "salePrice": "Sale Price",
+  "costAmount": "Cost Amount",
+  "positionValue": "Position Value",
+  "profitLossChart": "Profit/Loss Chart",
+  "breakEven": "Break-even: {value}",
+  "@breakEven": {
+    "placeholders": {
+      "value": { "type": "String" }
+    }
+  },
+  "profitLossInfoNote": "Profit/loss is calculated only as (sale price − cost) × lots; commissions, taxes and other costs are not included. This is not investment advice.",
+
+  "updateAvailableTitle": "Update Available",
+  "updateAvailableBody": "A new version has been released. You can update without reinstalling the app. Your saved calculations and settings are preserved.",
+  "later": "Later",
+  "mandatoryUpdateTitle": "Mandatory Update",
+  "mandatoryUpdateBody": "This version is no longer supported. You need to update to keep using the app. Your data is preserved.",
+  "updateReadyTitle": "Update Ready",
+  "updateReadyBody": "The update has been downloaded. Restart the app to complete the installation.",
+  "restart": "Restart",
+  "updateDownloading": "Downloading update…"
+}

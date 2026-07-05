@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/widgets/app_update_gate.dart';
+import '../../l10n/app_localizations.dart';
 import '../calculator/calculator_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -38,6 +39,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -57,11 +59,11 @@ class _SplashScreenState extends State<SplashScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const Spacer(flex: 3),
-                _buildWord('BİST', Colors.white, FontWeight.w900),
+                _buildWord(l.splashBrand, Colors.white, FontWeight.w900),
                 const SizedBox(height: 6),
-                _buildWord('MALİYET', Colors.white, FontWeight.w800),
+                _buildWord(l.splashCost, Colors.white, FontWeight.w800),
                 const SizedBox(height: 6),
-                _buildWord('HESAPLAMA', _accent, FontWeight.w800),
+                _buildWord(l.splashCalculation, _accent, FontWeight.w800),
                 const SizedBox(height: 22),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -70,7 +72,7 @@ class _SplashScreenState extends State<SplashScreen> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 14),
                       child: Text(
-                        'ASİSTANI',
+                        l.splashAssistant,
                         style: TextStyle(
                           color: Colors.white.withValues(alpha: 0.92),
                           fontSize: 20,

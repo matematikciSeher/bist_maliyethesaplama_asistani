@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import '../../core/calc/dividend_calculator.dart';
 import '../../core/utils/currency.dart';
 import '../../core/utils/formatters.dart';
+import '../../l10n/app_localizations.dart';
 
 /// "Temettü Hesaplama" ekranı.
 ///
@@ -52,23 +53,24 @@ class _DividendScreenState extends State<DividendScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final result = _result;
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Temettü Hesaplama',
-          style: TextStyle(fontWeight: FontWeight.bold),
+        title: Text(
+          l.dividendCalculation,
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         actions: [
           PopupMenuButton<String>(
-            tooltip: 'Para birimi',
+            tooltip: l.currencyTooltip,
             onSelected: (code) =>
                 setState(() => _currency = AppCurrency.byCode(code)),
             itemBuilder: (_) => [
               for (final c in AppCurrency.all)
                 PopupMenuItem(
                   value: c.code,
-                  child: Text('${c.symbol}  ${c.code} — ${c.label}'),
+                  child: Text('${c.symbol}  ${c.code} — ${c.label(l)}'),
                 ),
             ],
             child: Padding(
@@ -98,23 +100,23 @@ class _DividendScreenState extends State<DividendScreen> {
             const SizedBox(height: 20),
             _SectionTitle(
               icon: Icons.tune,
-              title: 'Temettü Bilgileri',
+              title: l.dividendInfoSection,
             ),
             const SizedBox(height: 12),
             _NumberField(
               controller: _lotsCtrl,
-              label: 'Lot Sayısı',
-              hint: 'Örn: 1.000',
+              label: l.numberOfLots,
+              hint: l.hintThousand,
               icon: Icons.inventory_2_outlined,
-              suffix: 'lot',
+              suffix: l.lotSuffix,
               allowDecimal: false,
               onChanged: _onChanged,
             ),
             const SizedBox(height: 12),
             _NumberField(
               controller: _dividendCtrl,
-              label: 'Hisse Başına Temettü (Brüt)',
-              hint: 'Örn: 2,50',
+              label: l.dividendPerShareGross,
+              hint: l.hintDecimal250,
               icon: Icons.payments_outlined,
               suffix: _currency.symbol,
               onChanged: _onChanged,
@@ -122,8 +124,8 @@ class _DividendScreenState extends State<DividendScreen> {
             const SizedBox(height: 12),
             _NumberField(
               controller: _taxCtrl,
-              label: 'Stopaj Oranı',
-              hint: 'Örn: 15',
+              label: l.withholdingRate,
+              hint: l.hint15,
               icon: Icons.percent,
               suffix: '%',
               onChanged: _onChanged,
@@ -131,8 +133,8 @@ class _DividendScreenState extends State<DividendScreen> {
             const SizedBox(height: 12),
             _NumberField(
               controller: _priceCtrl,
-              label: 'Hisse Fiyatı (Verim için)',
-              hint: 'Örn: 32,00',
+              label: l.sharePriceForYield,
+              hint: l.hintDecimal32,
               icon: Icons.show_chart,
               suffix: _currency.symbol,
               onChanged: _onChanged,
@@ -157,6 +159,7 @@ class _ResultCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final scheme = Theme.of(context).colorScheme;
     final ok = result.isOk;
     final base = ok ? scheme.primary : scheme.surfaceContainerHighest;
@@ -182,11 +185,11 @@ class _ResultCard extends StatelessWidget {
             : null,
         color: ok ? null : base,
       ),
-      child: ok ? _buildOk(onBase) : _buildMessage(onBase),
+      child: ok ? _buildOk(l, onBase) : _buildMessage(l, onBase),
     );
   }
 
-  Widget _buildOk(Color onBase) {
+  Widget _buildOk(AppLocalizations l, Color onBase) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -195,7 +198,7 @@ class _ResultCard extends StatelessWidget {
             Icon(Icons.savings_outlined, color: onBase, size: 20),
             const SizedBox(width: 8),
             Text(
-              'Net Temettü',
+              l.netDividend,
               style: TextStyle(
                 color: onBase.withValues(alpha: 0.85),
                 fontSize: 14,
@@ -218,7 +221,7 @@ class _ResultCard extends StatelessWidget {
           children: [
             Expanded(
               child: _MiniStat(
-                label: 'Brüt Temettü',
+                label: l.grossDividend,
                 value: Formatters.money(result.grossDividend, currency.symbol),
                 color: onBase,
               ),
@@ -230,7 +233,7 @@ class _ResultCard extends StatelessWidget {
             ),
             Expanded(
               child: _MiniStat(
-                label: 'Stopaj Kesintisi',
+                label: l.withholdingDeduction,
                 value: Formatters.money(result.taxAmount, currency.symbol),
                 color: onBase,
               ),
@@ -243,8 +246,8 @@ class _ResultCard extends StatelessWidget {
               ),
               Expanded(
                 child: _MiniStat(
-                  label: 'Verim Oranı',
-                  value: '%${Formatters.decimal(result.yieldPercent)}',
+                  label: l.yieldRate,
+                  value: l.percentValue(Formatters.decimal(result.yieldPercent)),
                   color: onBase,
                 ),
               ),
@@ -255,7 +258,7 @@ class _ResultCard extends StatelessWidget {
     );
   }
 
-  Widget _buildMessage(Color onBase) {
+  Widget _buildMessage(AppLocalizations l, Color onBase) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -263,8 +266,7 @@ class _ResultCard extends StatelessWidget {
         const SizedBox(width: 12),
         Expanded(
           child: Text(
-            'Hesaplama için lot sayısını ve hisse başına brüt temettüyü girin. '
-            'Verim oranı için ayrıca hisse fiyatını da girebilirsiniz.',
+            l.dividendEmptyMessage,
             style: TextStyle(
               color: onBase.withValues(alpha: 0.9),
               fontSize: 15,
@@ -386,6 +388,7 @@ class _InfoNote extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final scheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(14),
@@ -401,10 +404,7 @@ class _InfoNote extends StatelessWidget {
           const SizedBox(width: 10),
           Expanded(
             child: Text(
-              'Net temettü, brüt tutardan stopaj kesilerek bulunur. Türkiye\'de '
-              'temettü stopajı güncel olarak %15\'tir. Verim oranı, hisse '
-              'başına temettünün hisse fiyatına oranıdır. Yatırım tavsiyesi '
-              'değildir.',
+              l.dividendInfoNote,
               style: TextStyle(
                 fontSize: 12.5,
                 height: 1.4,

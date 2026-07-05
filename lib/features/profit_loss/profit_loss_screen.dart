@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import '../../core/calc/profit_loss_calculator.dart';
 import '../../core/utils/currency.dart';
 import '../../core/utils/formatters.dart';
+import '../../l10n/app_localizations.dart';
 
 /// "Kar/Zarar Simülatörü" ekranı.
 ///
@@ -53,23 +54,24 @@ class _ProfitLossScreenState extends State<ProfitLossScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final result = _result;
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Kar/Zarar Simülatörü',
-          style: TextStyle(fontWeight: FontWeight.bold),
+        title: Text(
+          l.profitLossSimulator,
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         actions: [
           PopupMenuButton<String>(
-            tooltip: 'Para birimi',
+            tooltip: l.currencyTooltip,
             onSelected: (code) =>
                 setState(() => _currency = AppCurrency.byCode(code)),
             itemBuilder: (_) => [
               for (final c in AppCurrency.all)
                 PopupMenuItem(
                   value: c.code,
-                  child: Text('${c.symbol}  ${c.code} — ${c.label}'),
+                  child: Text('${c.symbol}  ${c.code} — ${c.label(l)}'),
                 ),
             ],
             child: Padding(
@@ -109,13 +111,13 @@ class _ProfitLossScreenState extends State<ProfitLossScreen> {
             ],
             _SectionTitle(
               icon: Icons.tune,
-              title: 'Pozisyon Bilgileriniz',
+              title: l.yourPositionInfo,
             ),
             const SizedBox(height: 12),
             _NumberField(
               controller: _costCtrl,
-              label: 'Maliyet',
-              hint: 'Örn: 35,00',
+              label: l.cost,
+              hint: l.hintDecimal35,
               icon: Icons.price_change_outlined,
               suffix: _currency.symbol,
               onChanged: _onInputChanged,
@@ -123,10 +125,10 @@ class _ProfitLossScreenState extends State<ProfitLossScreen> {
             const SizedBox(height: 12),
             _NumberField(
               controller: _lotsCtrl,
-              label: 'Lot',
-              hint: 'Örn: 1.000',
+              label: l.lot,
+              hint: l.hintThousand,
               icon: Icons.inventory_2_outlined,
-              suffix: 'lot',
+              suffix: l.lotSuffix,
               allowDecimal: false,
               onChanged: _onInputChanged,
             ),
@@ -148,6 +150,7 @@ class _ResultCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final scheme = Theme.of(context).colorScheme;
     if (!result.isValid) {
       return Container(
@@ -165,8 +168,7 @@ class _ResultCard extends StatelessWidget {
             const SizedBox(width: 12),
             Expanded(
               child: Text(
-                'Simülasyon için maliyet ve lot bilgisini girin. Ardından '
-                'kaydırıcı ile fiyatı değiştirerek kar/zararınızı anlık görün.',
+                l.profitLossEmptyMessage,
                 style: TextStyle(
                   color: scheme.onSurface.withValues(alpha: 0.9),
                   fontSize: 15,
@@ -210,7 +212,7 @@ class _ResultCard extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Text(
-                isProfit ? 'Kar' : 'Zarar',
+                isProfit ? l.profit : l.loss,
                 style: TextStyle(
                   color: onBase.withValues(alpha: 0.9),
                   fontSize: 14,
@@ -227,7 +229,7 @@ class _ResultCard extends StatelessWidget {
                 ),
                 child: Text(
                   '${isProfit ? '+' : ''}'
-                  '%${Formatters.decimal(point.profitPercent)}',
+                  '${l.percentValue(Formatters.decimal(point.profitPercent))}',
                   style: const TextStyle(
                     color: onBase,
                     fontSize: 13,
@@ -252,7 +254,7 @@ class _ResultCard extends StatelessWidget {
             children: [
               Expanded(
                 child: _MiniStat(
-                  label: 'Satış Fiyatı',
+                  label: l.salePrice,
                   value: Formatters.money(point.price, currency.symbol),
                   color: onBase,
                 ),
@@ -264,7 +266,7 @@ class _ResultCard extends StatelessWidget {
               ),
               Expanded(
                 child: _MiniStat(
-                  label: 'Maliyet Tutarı',
+                  label: l.costAmount,
                   value: Formatters.money(result.totalCost, currency.symbol),
                   color: onBase,
                 ),
@@ -276,7 +278,7 @@ class _ResultCard extends StatelessWidget {
               ),
               Expanded(
                 child: _MiniStat(
-                  label: 'Pozisyon Değeri',
+                  label: l.positionValue,
                   value: Formatters.money(result.totalValue, currency.symbol),
                   color: onBase,
                 ),
@@ -298,6 +300,7 @@ class _ChartCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final scheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
@@ -314,7 +317,7 @@ class _ChartCard extends StatelessWidget {
               Icon(Icons.show_chart, size: 18, color: scheme.primary),
               const SizedBox(width: 8),
               Text(
-                'Kar/Zarar Grafiği',
+                l.profitLossChart,
                 style: Theme.of(context)
                     .textTheme
                     .titleSmall
@@ -355,7 +358,7 @@ class _ChartCard extends StatelessWidget {
                 ),
               ),
               Text(
-                'Başabaş: ${Formatters.money(result.cost, currency.symbol)}',
+                l.breakEven(Formatters.money(result.cost, currency.symbol)),
                 style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
@@ -604,6 +607,7 @@ class _PriceSlider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final scheme = Theme.of(context).colorScheme;
     final price = result.current.price;
     final isProfit = result.current.profit >= 0;
@@ -617,7 +621,7 @@ class _PriceSlider extends StatelessWidget {
             Icon(Icons.swipe, size: 18, color: scheme.primary),
             const SizedBox(width: 8),
             Text(
-              'Satış Fiyatı',
+              l.salePrice,
               style: Theme.of(context)
                   .textTheme
                   .titleMedium
@@ -765,6 +769,7 @@ class _InfoNote extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final scheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(14),
@@ -780,9 +785,7 @@ class _InfoNote extends StatelessWidget {
           const SizedBox(width: 10),
           Expanded(
             child: Text(
-              'Kar/zarar yalnızca (satış fiyatı − maliyet) × lot olarak '
-              'hesaplanır; komisyon, vergi ve diğer masraflar dahil değildir. '
-              'Yatırım tavsiyesi değildir.',
+              l.profitLossInfoNote,
               style: TextStyle(
                 fontSize: 12.5,
                 height: 1.4,

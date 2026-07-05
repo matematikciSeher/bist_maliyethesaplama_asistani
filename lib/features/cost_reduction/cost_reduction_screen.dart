@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import '../../core/calc/cost_reduction_calculator.dart';
 import '../../core/utils/currency.dart';
 import '../../core/utils/formatters.dart';
+import '../../l10n/app_localizations.dart';
 
 /// "Akıllı Maliyet Düşürme" ekranı.
 ///
@@ -52,23 +53,24 @@ class _CostReductionScreenState extends State<CostReductionScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final result = _result;
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Akıllı Maliyet Düşürme',
-          style: TextStyle(fontWeight: FontWeight.bold),
+        title: Text(
+          l.smartCostReduction,
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         actions: [
           PopupMenuButton<String>(
-            tooltip: 'Para birimi',
+            tooltip: l.currencyTooltip,
             onSelected: (code) =>
                 setState(() => _currency = AppCurrency.byCode(code)),
             itemBuilder: (_) => [
               for (final c in AppCurrency.all)
                 PopupMenuItem(
                   value: c.code,
-                  child: Text('${c.symbol}  ${c.code} — ${c.label}'),
+                  child: Text('${c.symbol}  ${c.code} — ${c.label(l)}'),
                 ),
             ],
             child: Padding(
@@ -98,23 +100,23 @@ class _CostReductionScreenState extends State<CostReductionScreen> {
             const SizedBox(height: 20),
             _SectionTitle(
               icon: Icons.tune,
-              title: 'Pozisyon Bilgileriniz',
+              title: l.yourPositionInfo,
             ),
             const SizedBox(height: 12),
             _NumberField(
               controller: _lotsCtrl,
-              label: 'Elinizdeki Lot',
-              hint: 'Örn: 1.000',
+              label: l.lotsYouHold,
+              hint: l.hintThousand,
               icon: Icons.inventory_2_outlined,
-              suffix: 'lot',
+              suffix: l.lotSuffix,
               allowDecimal: false,
               onChanged: _onChanged,
             ),
             const SizedBox(height: 12),
             _NumberField(
               controller: _avgCtrl,
-              label: 'Ortalama Maliyet',
-              hint: 'Örn: 32,00',
+              label: l.averageCost,
+              hint: l.hintDecimal32,
               icon: Icons.price_change_outlined,
               suffix: _currency.symbol,
               onChanged: _onChanged,
@@ -122,8 +124,8 @@ class _CostReductionScreenState extends State<CostReductionScreen> {
             const SizedBox(height: 12),
             _NumberField(
               controller: _priceCtrl,
-              label: 'Güncel Fiyat',
-              hint: 'Örn: 24,00',
+              label: l.currentPrice,
+              hint: l.hintDecimal24,
               icon: Icons.show_chart,
               suffix: _currency.symbol,
               onChanged: _onChanged,
@@ -131,8 +133,8 @@ class _CostReductionScreenState extends State<CostReductionScreen> {
             const SizedBox(height: 12),
             _NumberField(
               controller: _targetCtrl,
-              label: 'Hedef Maliyet',
-              hint: 'Örn: 28,00',
+              label: l.targetCost,
+              hint: l.hintDecimal28,
               icon: Icons.flag_outlined,
               suffix: _currency.symbol,
               onChanged: _onChanged,
@@ -157,6 +159,7 @@ class _ResultCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final scheme = Theme.of(context).colorScheme;
     final ok = result.isOk;
     final base = ok ? scheme.primary : scheme.surfaceContainerHighest;
@@ -182,11 +185,11 @@ class _ResultCard extends StatelessWidget {
             : null,
         color: ok ? null : base,
       ),
-      child: ok ? _buildOk(onBase) : _buildMessage(onBase),
+      child: ok ? _buildOk(context, l, onBase) : _buildMessage(l, onBase),
     );
   }
 
-  Widget _buildOk(Color onBase) {
+  Widget _buildOk(BuildContext context, AppLocalizations l, Color onBase) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -195,7 +198,7 @@ class _ResultCard extends StatelessWidget {
             Icon(Icons.trending_down, color: onBase, size: 20),
             const SizedBox(width: 8),
             Text(
-              'Sonuç',
+              l.result,
               style: TextStyle(
                 color: onBase.withValues(alpha: 0.85),
                 fontSize: 14,
@@ -205,33 +208,17 @@ class _ResultCard extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 10),
-        RichText(
-          text: TextSpan(
-            style: TextStyle(
-              color: onBase,
-              fontSize: 18,
-              height: 1.4,
-              fontWeight: FontWeight.w500,
-            ),
-            children: [
-              const TextSpan(text: 'Maliyetinizi '),
-              TextSpan(
-                text: Formatters.money(result.startAverage, currency.symbol),
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const TextSpan(text: "'den "),
-              TextSpan(
-                text:
-                    Formatters.money(result.newAverageCost, currency.symbol),
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const TextSpan(text: "'ye düşürmek için "),
-              TextSpan(
-                text: '${Formatters.quantity(result.lotsToBuy)} lot',
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const TextSpan(text: ' daha almalısınız.'),
-            ],
+        Text(
+          l.costReductionResult(
+            Formatters.money(result.startAverage, currency.symbol),
+            Formatters.money(result.newAverageCost, currency.symbol),
+            '${Formatters.quantity(result.lotsToBuy)} ${l.lotSuffix}',
+          ),
+          style: TextStyle(
+            color: onBase,
+            fontSize: 18,
+            height: 1.4,
+            fontWeight: FontWeight.w600,
           ),
         ),
         const SizedBox(height: 18),
@@ -239,7 +226,7 @@ class _ResultCard extends StatelessWidget {
           children: [
             Expanded(
               child: _MiniStat(
-                label: 'Ek Alım Tutarı',
+                label: l.additionalPurchaseAmount,
                 value: Formatters.money(
                     result.additionalInvestment, currency.symbol),
                 color: onBase,
@@ -252,7 +239,7 @@ class _ResultCard extends StatelessWidget {
             ),
             Expanded(
               child: _MiniStat(
-                label: 'Yeni Toplam Lot',
+                label: l.newTotalLots,
                 value: Formatters.quantity(result.newTotalLots),
                 color: onBase,
               ),
@@ -263,22 +250,19 @@ class _ResultCard extends StatelessWidget {
     );
   }
 
-  Widget _buildMessage(Color onBase) {
+  Widget _buildMessage(AppLocalizations l, Color onBase) {
     final (icon, text) = switch (result.status) {
       CostReductionStatus.incompleteInput => (
           Icons.edit_note,
-          'Hesaplama için tüm alanları doldurun. Elinizdeki lot, ortalama '
-              'maliyet, güncel fiyat ve hedef maliyeti girin.'
+          l.costReductionIncompleteInput
         ),
       CostReductionStatus.targetNotLower => (
           Icons.info_outline,
-          'Hedef maliyet, mevcut ortalama maliyetinizden düşük olmalı. '
-              'Maliyet düşürmek için daha düşük bir hedef belirleyin.'
+          l.costReductionTargetNotLower
         ),
       CostReductionStatus.priceNotBelowTarget => (
           Icons.warning_amber_rounded,
-          'Güncel fiyat hedef maliyetin altında olmalı. Bu fiyattan alım '
-              'yaparak ortalamanızı hedefe indiremezsiniz.'
+          l.costReductionPriceNotBelowTarget
         ),
       CostReductionStatus.ok => (Icons.check, ''),
     };
@@ -412,6 +396,7 @@ class _InfoNote extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final scheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(14),
@@ -427,8 +412,7 @@ class _InfoNote extends StatelessWidget {
           const SizedBox(width: 10),
           Expanded(
             child: Text(
-              'Hesaplama yalnızca alım maliyetini baz alır; komisyon, vergi ve '
-              'fiyat dalgalanmaları dikkate alınmaz. Yatırım tavsiyesi değildir.',
+              l.costReductionInfo,
               style: TextStyle(
                 fontSize: 12.5,
                 height: 1.4,

@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 
 import '../../../core/utils/currency.dart';
 import '../../../core/utils/formatters.dart';
+import '../../../l10n/app_localizations.dart';
 
 /// Tek bir alım satırı: sıra no, fiyat, lot, hesaplanan tutar ve sil butonu.
 class LotEntryRow extends StatefulWidget {
@@ -66,6 +67,7 @@ class _LotEntryRowState extends State<LotEntryRow> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final scheme = Theme.of(context).colorScheme;
     final amount = _price * _qty;
     return Card(
@@ -99,8 +101,8 @@ class _LotEntryRowState extends State<LotEntryRow> {
                   FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
                   ThousandsInputFormatter(),
                 ],
-                decoration: const InputDecoration(
-                  labelText: 'Fiyat',
+                decoration: InputDecoration(
+                  labelText: l.price,
                   isDense: true,
                 ),
                 onChanged: (_) => _emit(),
@@ -120,8 +122,8 @@ class _LotEntryRowState extends State<LotEntryRow> {
                   FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
                   ThousandsInputFormatter(),
                 ],
-                decoration: const InputDecoration(
-                  labelText: 'Lot',
+                decoration: InputDecoration(
+                  labelText: l.lot,
                   isDense: true,
                 ),
                 onChanged: (_) => _emit(),
@@ -136,7 +138,7 @@ class _LotEntryRowState extends State<LotEntryRow> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      'Tutar',
+                      l.amount,
                       style: TextStyle(
                         fontSize: 11,
                         color: scheme.onSurfaceVariant,
@@ -159,7 +161,7 @@ class _LotEntryRowState extends State<LotEntryRow> {
             IconButton(
               visualDensity: VisualDensity.compact,
               icon: Icon(Icons.close, size: 20, color: scheme.error),
-              tooltip: 'Satırı sil',
+              tooltip: l.deleteRow,
               onPressed: widget.onDelete,
             ),
           ],

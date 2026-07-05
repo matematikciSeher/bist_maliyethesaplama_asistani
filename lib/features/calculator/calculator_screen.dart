@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/providers.dart';
 import '../../core/utils/currency.dart';
+import '../../l10n/app_localizations.dart';
 import '../cost_reduction/cost_reduction_screen.dart';
 import '../dividend/dividend_screen.dart';
 import '../profit_loss/profit_loss_screen.dart';
@@ -20,15 +21,16 @@ class CalculatorScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context);
     final state = ref.watch(calculatorProvider);
     final notifier = ref.read(calculatorProvider.notifier);
     final messenger = ScaffoldMessenger.of(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'BİST Maliyet Hesaplama Asistanı',
-          style: TextStyle(fontWeight: FontWeight.bold),
+        title: Text(
+          l.appTitle,
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
       drawer: _AppDrawer(
@@ -62,7 +64,7 @@ class CalculatorScreen extends ConsumerWidget {
             Row(
               children: [
                 Text(
-                  'Alımlarınız',
+                  l.yourPurchases,
                   style: Theme.of(context)
                       .textTheme
                       .titleMedium
@@ -71,7 +73,7 @@ class CalculatorScreen extends ConsumerWidget {
                 const Spacer(),
                 if (state.editingId != null)
                   Chip(
-                    label: Text(state.name.isEmpty ? 'Kayıt' : state.name),
+                    label: Text(state.name.isEmpty ? l.recordChip : state.name),
                     avatar: const Icon(Icons.bookmark, size: 16),
                     visualDensity: VisualDensity.compact,
                   ),
@@ -96,7 +98,7 @@ class CalculatorScreen extends ConsumerWidget {
             OutlinedButton.icon(
               onPressed: notifier.addEntry,
               icon: const Icon(Icons.add),
-              label: const Text('Satır Ekle'),
+              label: Text(l.addRow),
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(
@@ -110,7 +112,7 @@ class CalculatorScreen extends ConsumerWidget {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _saveFlow(context, ref, messenger),
         icon: const Icon(Icons.save),
-        label: const Text('Kaydet'),
+        label: Text(l.save),
       ),
     );
   }
@@ -121,6 +123,7 @@ class CalculatorScreen extends ConsumerWidget {
     String value,
     ScaffoldMessengerState messenger,
   ) async {
+    final l = AppLocalizations.of(context);
     switch (value) {
       case 'save':
         await _saveFlow(context, ref, messenger);
@@ -134,12 +137,12 @@ class CalculatorScreen extends ConsumerWidget {
       case 'new':
         ref.read(calculatorProvider.notifier).reset();
         messenger.showSnackBar(
-          const SnackBar(content: Text('Yeni hesap başlatıldı')),
+          SnackBar(content: Text(l.newCalcStarted)),
         );
       case 'export':
-        await _export(ref, messenger);
+        await _export(ref, messenger, l);
       case 'import':
-        await _import(ref, messenger);
+        await _import(ref, messenger, l);
     }
   }
 
@@ -148,10 +151,11 @@ class CalculatorScreen extends ConsumerWidget {
     WidgetRef ref,
     ScaffoldMessengerState messenger,
   ) async {
+    final l = AppLocalizations.of(context);
     final state = ref.read(calculatorProvider);
     if (!state.hasUnsavedData) {
       messenger.showSnackBar(
-        const SnackBar(content: Text('Önce en az bir geçerli alım girin')),
+        SnackBar(content: Text(l.enterAtLeastOnePurchase)),
       );
       return;
     }
@@ -163,37 +167,38 @@ class CalculatorScreen extends ConsumerWidget {
     notifier.markSaved(calc.id);
     notifier.setName(calc.name);
     messenger.showSnackBar(
-      SnackBar(content: Text('"${calc.name}" kaydedildi')),
+      SnackBar(content: Text(l.savedNamed(calc.name))),
     );
   }
 
   Future<String?> _askName(BuildContext context, String initial) {
+    final l = AppLocalizations.of(context);
     final controller = TextEditingController(text: initial);
     return showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Hesabı Kaydet'),
+        title: Text(l.saveCalculation),
         content: TextField(
           controller: controller,
           autofocus: true,
           textCapitalization: TextCapitalization.characters,
-          decoration: const InputDecoration(
-            labelText: 'Hisse / Hesap adı',
-            hintText: 'Örn: THYAO',
+          decoration: InputDecoration(
+            labelText: l.stockAccountName,
+            hintText: l.stockAccountHint,
           ),
           onSubmitted: (v) => Navigator.pop(ctx, v),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('İptal'),
+            child: Text(l.cancel),
           ),
           FilledButton(
             onPressed: () {
               final text = controller.text.trim();
-              Navigator.pop(ctx, text.isEmpty ? 'Adsız' : text);
+              Navigator.pop(ctx, text.isEmpty ? l.unnamed : text);
             },
-            child: const Text('Kaydet'),
+            child: Text(l.save),
           ),
         ],
       ),
@@ -203,11 +208,12 @@ class CalculatorScreen extends ConsumerWidget {
   Future<void> _export(
     WidgetRef ref,
     ScaffoldMessengerState messenger,
+    AppLocalizations l,
   ) async {
     final saved = ref.read(savedCalculationsProvider);
     if (saved.isEmpty) {
       messenger.showSnackBar(
-        const SnackBar(content: Text('Dışa aktarılacak kayıt yok')),
+        SnackBar(content: Text(l.noRecordsToExport)),
       );
       return;
     }
@@ -215,13 +221,13 @@ class CalculatorScreen extends ConsumerWidget {
     final bytes = Uint8List.fromList(utf8.encode(json));
     final stamp = DateTime.now().toIso8601String().split('T').first;
     final path = await FilePicker.platform.saveFile(
-      dialogTitle: 'Yedeği kaydet',
+      dialogTitle: l.saveBackup,
       fileName: 'bist_maliyet_yedek_$stamp.json',
       bytes: bytes,
     );
     if (path != null) {
       messenger.showSnackBar(
-        const SnackBar(content: Text('Yedek dışa aktarıldı')),
+        SnackBar(content: Text(l.backupExported)),
       );
     }
   }
@@ -229,9 +235,10 @@ class CalculatorScreen extends ConsumerWidget {
   Future<void> _import(
     WidgetRef ref,
     ScaffoldMessengerState messenger,
+    AppLocalizations l,
   ) async {
     final result = await FilePicker.platform.pickFiles(
-      dialogTitle: 'Yedek dosyası seç',
+      dialogTitle: l.selectBackupFile,
       type: FileType.custom,
       allowedExtensions: ['json'],
       withData: true,
@@ -244,11 +251,11 @@ class CalculatorScreen extends ConsumerWidget {
           .read(savedCalculationsProvider.notifier)
           .import(json, merge: true);
       messenger.showSnackBar(
-        SnackBar(content: Text('$count kayıt içe aktarıldı')),
+        SnackBar(content: Text(l.recordsImported(count))),
       );
     } catch (_) {
       messenger.showSnackBar(
-        const SnackBar(content: Text('Dosya okunamadı veya geçersiz')),
+        SnackBar(content: Text(l.fileUnreadable)),
       );
     }
   }
@@ -277,6 +284,7 @@ class _AppDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final theme = Theme.of(context);
     return Drawer(
       child: SafeArea(
@@ -298,14 +306,14 @@ class _AppDrawer extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'BİST Maliyet',
+                    l.drawerTitle,
                     style: theme.textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: theme.colorScheme.onPrimaryContainer,
                     ),
                   ),
                   Text(
-                    'Hesaplama Asistanı',
+                    l.drawerSubtitle,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: theme.colorScheme.onPrimaryContainer,
                     ),
@@ -315,7 +323,7 @@ class _AppDrawer extends StatelessWidget {
             ),
             ListTile(
               leading: const Icon(Icons.trending_down),
-              title: const Text('Maliyet Düşürme'),
+              title: Text(l.costReduction),
               onTap: () {
                 Navigator.pop(context);
                 onCostReduction();
@@ -323,7 +331,7 @@ class _AppDrawer extends StatelessWidget {
             ),
             ListTile(
               leading: const Icon(Icons.savings_outlined),
-              title: const Text('Temettü Hesaplama'),
+              title: Text(l.dividendCalculation),
               onTap: () {
                 Navigator.pop(context);
                 onDividend();
@@ -331,7 +339,7 @@ class _AppDrawer extends StatelessWidget {
             ),
             ListTile(
               leading: const Icon(Icons.query_stats),
-              title: const Text('Kar/Zarar Simülatörü'),
+              title: Text(l.profitLossSimulator),
               onTap: () {
                 Navigator.pop(context);
                 onProfitLoss();
@@ -340,7 +348,7 @@ class _AppDrawer extends StatelessWidget {
             const Divider(),
             ListTile(
               leading: const Icon(Icons.save_outlined),
-              title: const Text('Kaydet'),
+              title: Text(l.save),
               onTap: () {
                 Navigator.pop(context);
                 onMenu('save');
@@ -348,7 +356,7 @@ class _AppDrawer extends StatelessWidget {
             ),
             ListTile(
               leading: const Icon(Icons.folder_open_outlined),
-              title: const Text('Kayıtlı Hesaplar'),
+              title: Text(l.savedCalculations),
               onTap: () {
                 Navigator.pop(context);
                 onMenu('list');
@@ -356,7 +364,7 @@ class _AppDrawer extends StatelessWidget {
             ),
             ListTile(
               leading: const Icon(Icons.note_add_outlined),
-              title: const Text('Yeni'),
+              title: Text(l.newItem),
               onTap: () {
                 Navigator.pop(context);
                 onMenu('new');
@@ -365,7 +373,7 @@ class _AppDrawer extends StatelessWidget {
             const Divider(),
             ListTile(
               leading: const Icon(Icons.upload_file_outlined),
-              title: const Text('Dışa Aktar'),
+              title: Text(l.exportItem),
               onTap: () {
                 Navigator.pop(context);
                 onMenu('export');
@@ -373,7 +381,7 @@ class _AppDrawer extends StatelessWidget {
             ),
             ListTile(
               leading: const Icon(Icons.download_outlined),
-              title: const Text('İçe Aktar'),
+              title: Text(l.importItem),
               onTap: () {
                 Navigator.pop(context);
                 onMenu('import');
@@ -382,15 +390,16 @@ class _AppDrawer extends StatelessWidget {
             const Divider(),
             ListTile(
               leading: const Icon(Icons.attach_money),
-              title: const Text('Para Birimi'),
-              subtitle: Text('${currency.symbol}  ${currency.code} — ${currency.label}'),
+              title: Text(l.currencyLabel),
+              subtitle: Text(
+                  '${currency.symbol}  ${currency.code} — ${currency.label(l)}'),
               onTap: () => _pickCurrency(context),
             ),
             SwitchListTile(
               secondary: Icon(
                 isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
               ),
-              title: const Text('Koyu Tema'),
+              title: Text(l.darkTheme),
               value: isDark,
               onChanged: (_) => onToggleTheme(),
             ),
@@ -401,6 +410,7 @@ class _AppDrawer extends StatelessWidget {
   }
 
   Future<void> _pickCurrency(BuildContext context) async {
+    final l = AppLocalizations.of(context);
     final selected = await showModalBottomSheet<String>(
       context: context,
       showDragHandle: true,
@@ -415,7 +425,7 @@ class _AppDrawer extends StatelessWidget {
                   style: const TextStyle(
                       fontSize: 18, fontWeight: FontWeight.bold),
                 ),
-                title: Text('${c.code} — ${c.label}'),
+                title: Text('${c.code} — ${c.label(l)}'),
                 trailing: c.code == currency.code
                     ? const Icon(Icons.check)
                     : null,
