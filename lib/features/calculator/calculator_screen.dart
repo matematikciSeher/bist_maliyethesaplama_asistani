@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/providers.dart';
 import '../../core/utils/currency.dart';
+import '../../core/widgets/banner_ad_widget.dart';
 import '../../l10n/app_localizations.dart';
 import '../cost_reduction/cost_reduction_screen.dart';
 import '../dividend/dividend_screen.dart';
@@ -28,9 +29,14 @@ class CalculatorScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          l.appTitle,
-          style: const TextStyle(fontWeight: FontWeight.bold),
+        title: FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.centerLeft,
+          child: Text(
+            l.appTitle,
+            maxLines: 1,
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
         ),
       ),
       drawer: _AppDrawer(
@@ -114,6 +120,7 @@ class CalculatorScreen extends ConsumerWidget {
         icon: const Icon(Icons.save),
         label: Text(l.save),
       ),
+      bottomNavigationBar: const BannerAdWidget(),
     );
   }
 

@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -25,6 +28,10 @@ Future<void> main() async {
   Formatters.configure(localeName);
 
   final prefs = await SharedPreferences.getInstance();
+
+  // AdMob SDK'sını başlat (banner reklamlar için).
+  unawaited(MobileAds.instance.initialize());
+
   FlutterNativeSplash.remove();
 
   runApp(
