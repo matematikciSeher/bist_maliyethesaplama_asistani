@@ -32,31 +32,19 @@ class CalculatorScreen extends ConsumerWidget {
         title: FittedBox(
           fit: BoxFit.scaleDown,
           alignment: Alignment.centerLeft,
-          child: Text(
-            l.appTitle,
-            maxLines: 1,
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
+          child: Text(l.appTitle, maxLines: 1, style: const TextStyle(fontWeight: FontWeight.bold)),
         ),
       ),
       drawer: _AppDrawer(
         currency: state.currency,
         onSelectCurrency: notifier.setCurrency,
-        onCostReduction: () => Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (_) => CostReductionScreen(currency: state.currency),
-          ),
-        ),
-        onDividend: () => Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (_) => DividendScreen(currency: state.currency),
-          ),
-        ),
-        onProfitLoss: () => Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (_) => ProfitLossScreen(currency: state.currency),
-          ),
-        ),
+        onCostReduction: () => Navigator.of(
+          context,
+        ).push(MaterialPageRoute(builder: (_) => CostReductionScreen(currency: state.currency))),
+        onDividend: () =>
+            Navigator.of(context).push(MaterialPageRoute(builder: (_) => DividendScreen(currency: state.currency))),
+        onProfitLoss: () =>
+            Navigator.of(context).push(MaterialPageRoute(builder: (_) => ProfitLossScreen(currency: state.currency))),
         isDark: ref.watch(themeModeProvider) == ThemeMode.dark,
         onToggleTheme: () => ref.read(themeModeProvider.notifier).toggle(),
         onMenu: (value) => _onMenu(context, ref, value, messenger),
@@ -71,10 +59,7 @@ class CalculatorScreen extends ConsumerWidget {
               children: [
                 Text(
                   l.yourPurchases,
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleMedium
-                      ?.copyWith(fontWeight: FontWeight.bold),
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 const Spacer(),
                 if (state.editingId != null)
@@ -93,11 +78,7 @@ class CalculatorScreen extends ConsumerWidget {
                 initialPrice: state.entries[i].price,
                 initialQuantity: state.entries[i].quantity,
                 currency: state.currency,
-                onChanged: (price, qty) => notifier.updateEntry(
-                  state.entries[i].id,
-                  price: price,
-                  quantity: qty,
-                ),
+                onChanged: (price, qty) => notifier.updateEntry(state.entries[i].id, price: price, quantity: qty),
                 onDelete: () => notifier.removeEntry(state.entries[i].id),
               ),
             const SizedBox(height: 4),
@@ -107,9 +88,7 @@ class CalculatorScreen extends ConsumerWidget {
               label: Text(l.addRow),
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
             ),
           ],
@@ -120,16 +99,11 @@ class CalculatorScreen extends ConsumerWidget {
         icon: const Icon(Icons.save),
         label: Text(l.save),
       ),
-      bottomNavigationBar: const BannerAdWidget(),
+      // bottomNavigationBar: const BannerAdWidget(),
     );
   }
 
-  Future<void> _onMenu(
-    BuildContext context,
-    WidgetRef ref,
-    String value,
-    ScaffoldMessengerState messenger,
-  ) async {
+  Future<void> _onMenu(BuildContext context, WidgetRef ref, String value, ScaffoldMessengerState messenger) async {
     final l = AppLocalizations.of(context);
     switch (value) {
       case 'save':
@@ -143,9 +117,7 @@ class CalculatorScreen extends ConsumerWidget {
         );
       case 'new':
         ref.read(calculatorProvider.notifier).reset();
-        messenger.showSnackBar(
-          SnackBar(content: Text(l.newCalcStarted)),
-        );
+        messenger.showSnackBar(SnackBar(content: Text(l.newCalcStarted)));
       case 'export':
         await _export(ref, messenger, l);
       case 'import':
@@ -153,17 +125,11 @@ class CalculatorScreen extends ConsumerWidget {
     }
   }
 
-  Future<void> _saveFlow(
-    BuildContext context,
-    WidgetRef ref,
-    ScaffoldMessengerState messenger,
-  ) async {
+  Future<void> _saveFlow(BuildContext context, WidgetRef ref, ScaffoldMessengerState messenger) async {
     final l = AppLocalizations.of(context);
     final state = ref.read(calculatorProvider);
     if (!state.hasUnsavedData) {
-      messenger.showSnackBar(
-        SnackBar(content: Text(l.enterAtLeastOnePurchase)),
-      );
+      messenger.showSnackBar(SnackBar(content: Text(l.enterAtLeastOnePurchase)));
       return;
     }
     final name = await _askName(context, state.name);
@@ -173,9 +139,7 @@ class CalculatorScreen extends ConsumerWidget {
     await ref.read(savedCalculationsProvider.notifier).save(calc);
     notifier.markSaved(calc.id);
     notifier.setName(calc.name);
-    messenger.showSnackBar(
-      SnackBar(content: Text(l.savedNamed(calc.name))),
-    );
+    messenger.showSnackBar(SnackBar(content: Text(l.savedNamed(calc.name))));
   }
 
   Future<String?> _askName(BuildContext context, String initial) {
@@ -189,17 +153,11 @@ class CalculatorScreen extends ConsumerWidget {
           controller: controller,
           autofocus: true,
           textCapitalization: TextCapitalization.characters,
-          decoration: InputDecoration(
-            labelText: l.stockAccountName,
-            hintText: l.stockAccountHint,
-          ),
+          decoration: InputDecoration(labelText: l.stockAccountName, hintText: l.stockAccountHint),
           onSubmitted: (v) => Navigator.pop(ctx, v),
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(l.cancel),
-          ),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(l.cancel)),
           FilledButton(
             onPressed: () {
               final text = controller.text.trim();
@@ -212,16 +170,10 @@ class CalculatorScreen extends ConsumerWidget {
     );
   }
 
-  Future<void> _export(
-    WidgetRef ref,
-    ScaffoldMessengerState messenger,
-    AppLocalizations l,
-  ) async {
+  Future<void> _export(WidgetRef ref, ScaffoldMessengerState messenger, AppLocalizations l) async {
     final saved = ref.read(savedCalculationsProvider);
     if (saved.isEmpty) {
-      messenger.showSnackBar(
-        SnackBar(content: Text(l.noRecordsToExport)),
-      );
+      messenger.showSnackBar(SnackBar(content: Text(l.noRecordsToExport)));
       return;
     }
     final json = ref.read(savedCalculationsProvider.notifier).export();
@@ -233,17 +185,11 @@ class CalculatorScreen extends ConsumerWidget {
       bytes: bytes,
     );
     if (path != null) {
-      messenger.showSnackBar(
-        SnackBar(content: Text(l.backupExported)),
-      );
+      messenger.showSnackBar(SnackBar(content: Text(l.backupExported)));
     }
   }
 
-  Future<void> _import(
-    WidgetRef ref,
-    ScaffoldMessengerState messenger,
-    AppLocalizations l,
-  ) async {
+  Future<void> _import(WidgetRef ref, ScaffoldMessengerState messenger, AppLocalizations l) async {
     final result = await FilePicker.platform.pickFiles(
       dialogTitle: l.selectBackupFile,
       type: FileType.custom,
@@ -254,16 +200,10 @@ class CalculatorScreen extends ConsumerWidget {
     if (bytes == null) return;
     try {
       final json = utf8.decode(bytes);
-      final count = await ref
-          .read(savedCalculationsProvider.notifier)
-          .import(json, merge: true);
-      messenger.showSnackBar(
-        SnackBar(content: Text(l.recordsImported(count))),
-      );
+      final count = await ref.read(savedCalculationsProvider.notifier).import(json, merge: true);
+      messenger.showSnackBar(SnackBar(content: Text(l.recordsImported(count))));
     } catch (_) {
-      messenger.showSnackBar(
-        SnackBar(content: Text(l.fileUnreadable)),
-      );
+      messenger.showSnackBar(SnackBar(content: Text(l.fileUnreadable)));
     }
   }
 }
@@ -299,18 +239,12 @@ class _AppDrawer extends StatelessWidget {
           padding: EdgeInsets.zero,
           children: [
             DrawerHeader(
-              decoration: BoxDecoration(
-                color: theme.colorScheme.primaryContainer,
-              ),
+              decoration: BoxDecoration(color: theme.colorScheme.primaryContainer),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Icon(
-                    Icons.calculate_outlined,
-                    size: 36,
-                    color: theme.colorScheme.onPrimaryContainer,
-                  ),
+                  Icon(Icons.calculate_outlined, size: 36, color: theme.colorScheme.onPrimaryContainer),
                   const SizedBox(height: 8),
                   Text(
                     l.drawerTitle,
@@ -321,9 +255,7 @@ class _AppDrawer extends StatelessWidget {
                   ),
                   Text(
                     l.drawerSubtitle,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onPrimaryContainer,
-                    ),
+                    style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onPrimaryContainer),
                   ),
                 ],
               ),
@@ -398,14 +330,11 @@ class _AppDrawer extends StatelessWidget {
             ListTile(
               leading: const Icon(Icons.attach_money),
               title: Text(l.currencyLabel),
-              subtitle: Text(
-                  '${currency.symbol}  ${currency.code} — ${currency.label(l)}'),
+              subtitle: Text('${currency.symbol}  ${currency.code} — ${currency.label(l)}'),
               onTap: () => _pickCurrency(context),
             ),
             SwitchListTile(
-              secondary: Icon(
-                isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
-              ),
+              secondary: Icon(isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined),
               title: Text(l.darkTheme),
               value: isDark,
               onChanged: (_) => onToggleTheme(),
@@ -427,15 +356,9 @@ class _AppDrawer extends StatelessWidget {
           children: [
             for (final c in AppCurrency.all)
               ListTile(
-                leading: Text(
-                  c.symbol,
-                  style: const TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.bold),
-                ),
+                leading: Text(c.symbol, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 title: Text('${c.code} — ${c.label(l)}'),
-                trailing: c.code == currency.code
-                    ? const Icon(Icons.check)
-                    : null,
+                trailing: c.code == currency.code ? const Icon(Icons.check) : null,
                 onTap: () => Navigator.pop(ctx, c.code),
               ),
           ],
