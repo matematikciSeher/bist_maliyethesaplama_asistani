@@ -28,17 +28,18 @@
   "stockAccountName": "Stock / Account name",
   "stockAccountHint": "e.g. THYAO",
   "unnamed": "Unnamed",
-  "noRecordsToExport": "No records to export",
-  "saveBackup": "Save backup",
-  "backupExported": "Backup exported",
-  "selectBackupFile": "Select backup file",
-  "recordsImported": "{count} records imported",
-  "@recordsImported": {
+  "noRecordsForPdf": "No records to create a PDF",
+  "savePdf": "Save PDF",
+  "pdfCreated": "PDF created",
+  "pdfCreateFailed": "PDF could not be created",
+  "createPdf": "Create PDF",
+  "pdfReportTitle": "Cost Calculation Report",
+  "pdfGeneratedAt": "Generated: {date}",
+  "@pdfGeneratedAt": {
     "placeholders": {
-      "count": { "type": "int" }
+      "date": { "type": "String" }
     }
   },
-  "fileUnreadable": "File could not be read or is invalid",
 
   "drawerTitle": "BIST Cost",
   "drawerSubtitle": "Calculation Assistant",
@@ -46,12 +47,16 @@
   "dividendCalculation": "Dividend Calculation",
   "profitLossSimulator": "Profit/Loss Simulator",
   "savedCalculations": "Saved Calculations",
-  "newItem": "New",
-  "exportItem": "Export",
-  "importItem": "Import",
   "currencyLabel": "Currency",
-  "darkTheme": "Dark Theme",
   "currencyTooltip": "Currency",
+  "settings": "Settings",
+  "theme": "Theme",
+  "themeSystem": "System",
+  "themeLight": "Light",
+  "themeDark": "Dark",
+  "language": "Language",
+  "languageTurkish": "Türkçe",
+  "languageEnglish": "English",
 
   "currencyTRYLabel": "Turkish Lira",
   "currencyUSDLabel": "US Dollar",

@@ -212,41 +212,47 @@ abstract class AppLocalizations {
   /// **'Unnamed'**
   String get unnamed;
 
-  /// No description provided for @noRecordsToExport.
+  /// No description provided for @noRecordsForPdf.
   ///
   /// In en, this message translates to:
-  /// **'No records to export'**
-  String get noRecordsToExport;
+  /// **'No records to create a PDF'**
+  String get noRecordsForPdf;
 
-  /// No description provided for @saveBackup.
+  /// No description provided for @savePdf.
   ///
   /// In en, this message translates to:
-  /// **'Save backup'**
-  String get saveBackup;
+  /// **'Save PDF'**
+  String get savePdf;
 
-  /// No description provided for @backupExported.
+  /// No description provided for @pdfCreated.
   ///
   /// In en, this message translates to:
-  /// **'Backup exported'**
-  String get backupExported;
+  /// **'PDF created'**
+  String get pdfCreated;
 
-  /// No description provided for @selectBackupFile.
+  /// No description provided for @pdfCreateFailed.
   ///
   /// In en, this message translates to:
-  /// **'Select backup file'**
-  String get selectBackupFile;
+  /// **'PDF could not be created'**
+  String get pdfCreateFailed;
 
-  /// No description provided for @recordsImported.
+  /// No description provided for @createPdf.
   ///
   /// In en, this message translates to:
-  /// **'{count} records imported'**
-  String recordsImported(int count);
+  /// **'Create PDF'**
+  String get createPdf;
 
-  /// No description provided for @fileUnreadable.
+  /// No description provided for @pdfReportTitle.
   ///
   /// In en, this message translates to:
-  /// **'File could not be read or is invalid'**
-  String get fileUnreadable;
+  /// **'Cost Calculation Report'**
+  String get pdfReportTitle;
+
+  /// No description provided for @pdfGeneratedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Generated: {date}'**
+  String pdfGeneratedAt(String date);
 
   /// No description provided for @drawerTitle.
   ///
@@ -284,41 +290,65 @@ abstract class AppLocalizations {
   /// **'Saved Calculations'**
   String get savedCalculations;
 
-  /// No description provided for @newItem.
-  ///
-  /// In en, this message translates to:
-  /// **'New'**
-  String get newItem;
-
-  /// No description provided for @exportItem.
-  ///
-  /// In en, this message translates to:
-  /// **'Export'**
-  String get exportItem;
-
-  /// No description provided for @importItem.
-  ///
-  /// In en, this message translates to:
-  /// **'Import'**
-  String get importItem;
-
   /// No description provided for @currencyLabel.
   ///
   /// In en, this message translates to:
   /// **'Currency'**
   String get currencyLabel;
 
-  /// No description provided for @darkTheme.
-  ///
-  /// In en, this message translates to:
-  /// **'Dark Theme'**
-  String get darkTheme;
-
   /// No description provided for @currencyTooltip.
   ///
   /// In en, this message translates to:
   /// **'Currency'**
   String get currencyTooltip;
+
+  /// No description provided for @settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settings;
+
+  /// No description provided for @theme.
+  ///
+  /// In en, this message translates to:
+  /// **'Theme'**
+  String get theme;
+
+  /// No description provided for @themeSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'System'**
+  String get themeSystem;
+
+  /// No description provided for @themeLight.
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get themeLight;
+
+  /// No description provided for @themeDark.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark'**
+  String get themeDark;
+
+  /// No description provided for @language.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get language;
+
+  /// No description provided for @languageTurkish.
+  ///
+  /// In en, this message translates to:
+  /// **'Türkçe'**
+  String get languageTurkish;
+
+  /// No description provided for @languageEnglish.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get languageEnglish;
 
   /// No description provided for @currencyTRYLabel.
   ///

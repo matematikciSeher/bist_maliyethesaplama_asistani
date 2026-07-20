@@ -1,17 +1,14 @@
-import 'dart:convert';
-import 'dart:typed_data';
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../core/providers.dart';
+import '../../core/services/pdf_export_service.dart';
 import '../../core/utils/currency.dart';
-import '../../core/widgets/banner_ad_widget.dart';
 import '../../l10n/app_localizations.dart';
 import '../cost_reduction/cost_reduction_screen.dart';
 import '../dividend/dividend_screen.dart';
 import '../profit_loss/profit_loss_screen.dart';
+import '../settings/settings_screen.dart';
 import 'calculator_providers.dart';
 import 'widgets/lot_entry_row.dart';
 import 'widgets/result_card.dart';
@@ -45,8 +42,7 @@ class CalculatorScreen extends ConsumerWidget {
             Navigator.of(context).push(MaterialPageRoute(builder: (_) => DividendScreen(currency: state.currency))),
         onProfitLoss: () =>
             Navigator.of(context).push(MaterialPageRoute(builder: (_) => ProfitLossScreen(currency: state.currency))),
-        isDark: ref.watch(themeModeProvider) == ThemeMode.dark,
-        onToggleTheme: () => ref.read(themeModeProvider.notifier).toggle(),
+        onSettings: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const SettingsScreen())),
         onMenu: (value) => _onMenu(context, ref, value, messenger),
       ),
       body: SafeArea(
@@ -106,8 +102,6 @@ class CalculatorScreen extends ConsumerWidget {
   Future<void> _onMenu(BuildContext context, WidgetRef ref, String value, ScaffoldMessengerState messenger) async {
     final l = AppLocalizations.of(context);
     switch (value) {
-      case 'save':
-        await _saveFlow(context, ref, messenger);
       case 'list':
         await showModalBottomSheet(
           context: context,
@@ -115,13 +109,8 @@ class CalculatorScreen extends ConsumerWidget {
           showDragHandle: true,
           builder: (_) => const SavedCalculationsSheet(),
         );
-      case 'new':
-        ref.read(calculatorProvider.notifier).reset();
-        messenger.showSnackBar(SnackBar(content: Text(l.newCalcStarted)));
-      case 'export':
-        await _export(ref, messenger, l);
-      case 'import':
-        await _import(ref, messenger, l);
+      case 'pdf':
+        await _createPdf(ref, messenger, l);
     }
   }
 
@@ -170,40 +159,28 @@ class CalculatorScreen extends ConsumerWidget {
     );
   }
 
-  Future<void> _export(WidgetRef ref, ScaffoldMessengerState messenger, AppLocalizations l) async {
+  Future<void> _createPdf(WidgetRef ref, ScaffoldMessengerState messenger, AppLocalizations l) async {
     final saved = ref.read(savedCalculationsProvider);
     if (saved.isEmpty) {
-      messenger.showSnackBar(SnackBar(content: Text(l.noRecordsToExport)));
+      messenger.showSnackBar(SnackBar(content: Text(l.noRecordsForPdf)));
       return;
     }
-    final json = ref.read(savedCalculationsProvider.notifier).export();
-    final bytes = Uint8List.fromList(utf8.encode(json));
-    final stamp = DateTime.now().toIso8601String().split('T').first;
-    final path = await FilePicker.platform.saveFile(
-      dialogTitle: l.saveBackup,
-      fileName: 'bist_maliyet_yedek_$stamp.json',
-      bytes: bytes,
-    );
-    if (path != null) {
-      messenger.showSnackBar(SnackBar(content: Text(l.backupExported)));
-    }
-  }
-
-  Future<void> _import(WidgetRef ref, ScaffoldMessengerState messenger, AppLocalizations l) async {
-    final result = await FilePicker.platform.pickFiles(
-      dialogTitle: l.selectBackupFile,
-      type: FileType.custom,
-      allowedExtensions: ['json'],
-      withData: true,
-    );
-    final bytes = result?.files.single.bytes;
-    if (bytes == null) return;
     try {
-      final json = utf8.decode(bytes);
-      final count = await ref.read(savedCalculationsProvider.notifier).import(json, merge: true);
-      messenger.showSnackBar(SnackBar(content: Text(l.recordsImported(count))));
+      final bytes = await const PdfExportService().buildReport(
+        calculations: saved,
+        l: l,
+      );
+      final stamp = DateTime.now().toIso8601String().split('T').first;
+      final path = await FilePicker.platform.saveFile(
+        dialogTitle: l.savePdf,
+        fileName: 'bist_maliyet_rapor_$stamp.pdf',
+        bytes: bytes,
+      );
+      if (path != null) {
+        messenger.showSnackBar(SnackBar(content: Text(l.pdfCreated)));
+      }
     } catch (_) {
-      messenger.showSnackBar(SnackBar(content: Text(l.fileUnreadable)));
+      messenger.showSnackBar(SnackBar(content: Text(l.pdfCreateFailed)));
     }
   }
 }
@@ -214,8 +191,7 @@ class _AppDrawer extends StatelessWidget {
   final VoidCallback onCostReduction;
   final VoidCallback onDividend;
   final VoidCallback onProfitLoss;
-  final bool isDark;
-  final VoidCallback onToggleTheme;
+  final VoidCallback onSettings;
   final ValueChanged<String> onMenu;
 
   const _AppDrawer({
@@ -224,8 +200,7 @@ class _AppDrawer extends StatelessWidget {
     required this.onCostReduction,
     required this.onDividend,
     required this.onProfitLoss,
-    required this.isDark,
-    required this.onToggleTheme,
+    required this.onSettings,
     required this.onMenu,
   });
 
@@ -286,14 +261,6 @@ class _AppDrawer extends StatelessWidget {
             ),
             const Divider(),
             ListTile(
-              leading: const Icon(Icons.save_outlined),
-              title: Text(l.save),
-              onTap: () {
-                Navigator.pop(context);
-                onMenu('save');
-              },
-            ),
-            ListTile(
               leading: const Icon(Icons.folder_open_outlined),
               title: Text(l.savedCalculations),
               onTap: () {
@@ -302,28 +269,11 @@ class _AppDrawer extends StatelessWidget {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.note_add_outlined),
-              title: Text(l.newItem),
+              leading: const Icon(Icons.picture_as_pdf_outlined),
+              title: Text(l.createPdf),
               onTap: () {
                 Navigator.pop(context);
-                onMenu('new');
-              },
-            ),
-            const Divider(),
-            ListTile(
-              leading: const Icon(Icons.upload_file_outlined),
-              title: Text(l.exportItem),
-              onTap: () {
-                Navigator.pop(context);
-                onMenu('export');
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.download_outlined),
-              title: Text(l.importItem),
-              onTap: () {
-                Navigator.pop(context);
-                onMenu('import');
+                onMenu('pdf');
               },
             ),
             const Divider(),
@@ -333,11 +283,13 @@ class _AppDrawer extends StatelessWidget {
               subtitle: Text('${currency.symbol}  ${currency.code} — ${currency.label(l)}'),
               onTap: () => _pickCurrency(context),
             ),
-            SwitchListTile(
-              secondary: Icon(isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined),
-              title: Text(l.darkTheme),
-              value: isDark,
-              onChanged: (_) => onToggleTheme(),
+            ListTile(
+              leading: const Icon(Icons.settings_outlined),
+              title: Text(l.settings),
+              onTap: () {
+                Navigator.pop(context);
+                onSettings();
+              },
             ),
           ],
         ),

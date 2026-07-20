@@ -69,24 +69,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get unnamed => 'Unnamed';
 
   @override
-  String get noRecordsToExport => 'No records to export';
+  String get noRecordsForPdf => 'No records to create a PDF';
 
   @override
-  String get saveBackup => 'Save backup';
+  String get savePdf => 'Save PDF';
 
   @override
-  String get backupExported => 'Backup exported';
+  String get pdfCreated => 'PDF created';
 
   @override
-  String get selectBackupFile => 'Select backup file';
+  String get pdfCreateFailed => 'PDF could not be created';
 
   @override
-  String recordsImported(int count) {
-    return '$count records imported';
+  String get createPdf => 'Create PDF';
+
+  @override
+  String get pdfReportTitle => 'Cost Calculation Report';
+
+  @override
+  String pdfGeneratedAt(String date) {
+    return 'Generated: $date';
   }
-
-  @override
-  String get fileUnreadable => 'File could not be read or is invalid';
 
   @override
   String get drawerTitle => 'BIST Cost';
@@ -107,22 +110,34 @@ class AppLocalizationsEn extends AppLocalizations {
   String get savedCalculations => 'Saved Calculations';
 
   @override
-  String get newItem => 'New';
-
-  @override
-  String get exportItem => 'Export';
-
-  @override
-  String get importItem => 'Import';
-
-  @override
   String get currencyLabel => 'Currency';
 
   @override
-  String get darkTheme => 'Dark Theme';
+  String get currencyTooltip => 'Currency';
 
   @override
-  String get currencyTooltip => 'Currency';
+  String get settings => 'Settings';
+
+  @override
+  String get theme => 'Theme';
+
+  @override
+  String get themeSystem => 'System';
+
+  @override
+  String get themeLight => 'Light';
+
+  @override
+  String get themeDark => 'Dark';
+
+  @override
+  String get language => 'Language';
+
+  @override
+  String get languageTurkish => 'Türkçe';
+
+  @override
+  String get languageEnglish => 'English';
 
   @override
   String get currencyTRYLabel => 'Turkish Lira';

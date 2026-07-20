@@ -68,24 +68,27 @@ class AppLocalizationsTr extends AppLocalizations {
   String get unnamed => 'Adsız';
 
   @override
-  String get noRecordsToExport => 'Dışa aktarılacak kayıt yok';
+  String get noRecordsForPdf => 'PDF oluşturulacak kayıt yok';
 
   @override
-  String get saveBackup => 'Yedeği kaydet';
+  String get savePdf => 'PDF\'i kaydet';
 
   @override
-  String get backupExported => 'Yedek dışa aktarıldı';
+  String get pdfCreated => 'PDF oluşturuldu';
 
   @override
-  String get selectBackupFile => 'Yedek dosyası seç';
+  String get pdfCreateFailed => 'PDF oluşturulamadı';
 
   @override
-  String recordsImported(int count) {
-    return '$count kayıt içe aktarıldı';
+  String get createPdf => 'PDF Oluştur';
+
+  @override
+  String get pdfReportTitle => 'Maliyet Hesaplama Raporu';
+
+  @override
+  String pdfGeneratedAt(String date) {
+    return 'Oluşturulma: $date';
   }
-
-  @override
-  String get fileUnreadable => 'Dosya okunamadı veya geçersiz';
 
   @override
   String get drawerTitle => 'BİST Maliyet';
@@ -106,22 +109,34 @@ class AppLocalizationsTr extends AppLocalizations {
   String get savedCalculations => 'Kayıtlı Hesaplar';
 
   @override
-  String get newItem => 'Yeni';
-
-  @override
-  String get exportItem => 'Dışa Aktar';
-
-  @override
-  String get importItem => 'İçe Aktar';
-
-  @override
   String get currencyLabel => 'Para Birimi';
 
   @override
-  String get darkTheme => 'Koyu Tema';
+  String get currencyTooltip => 'Para birimi';
 
   @override
-  String get currencyTooltip => 'Para birimi';
+  String get settings => 'Ayarlar';
+
+  @override
+  String get theme => 'Tema';
+
+  @override
+  String get themeSystem => 'Sistem';
+
+  @override
+  String get themeLight => 'Açık';
+
+  @override
+  String get themeDark => 'Koyu';
+
+  @override
+  String get language => 'Dil';
+
+  @override
+  String get languageTurkish => 'Türkçe';
+
+  @override
+  String get languageEnglish => 'English';
 
   @override
   String get currencyTRYLabel => 'Türk Lirası';

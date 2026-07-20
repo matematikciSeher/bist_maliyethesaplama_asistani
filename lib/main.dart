@@ -18,16 +18,12 @@ Future<void> main() async {
   final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
-  // Cihazın sistem dili Türkçe ise uygulama Türkçe, aksi halde İngilizce olur.
-  final systemLocale = widgetsBinding.platformDispatcher.locale;
-  final isTurkish = systemLocale.languageCode == 'tr';
-  final localeName = isTurkish ? 'tr_TR' : 'en_US';
-  final appLocale = Locale(isTurkish ? 'tr' : 'en');
+  final prefs = await SharedPreferences.getInstance();
+  final appLocale = resolveInitialLocale(prefs);
+  final localeName = appLocale.languageCode == 'tr' ? 'tr_TR' : 'en_US';
 
   await initializeDateFormatting(localeName, null);
   Formatters.configure(localeName);
-
-  final prefs = await SharedPreferences.getInstance();
 
   // AdMob SDK'sını başlat (banner reklamlar için).
   unawaited(MobileAds.instance.initialize());
@@ -39,19 +35,18 @@ Future<void> main() async {
       overrides: [
         sharedPreferencesProvider.overrideWithValue(prefs),
       ],
-      child: BistMaliyetApp(locale: appLocale),
+      child: const BistMaliyetApp(),
     ),
   );
 }
 
 class BistMaliyetApp extends ConsumerWidget {
-  const BistMaliyetApp({super.key, required this.locale});
-
-  final Locale locale;
+  const BistMaliyetApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeModeProvider);
+    final locale = ref.watch(localeProvider);
     return MaterialApp(
       onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
       debugShowCheckedModeBanner: false,
